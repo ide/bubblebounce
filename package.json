@@ -1,0 +1,19 @@
+{
+  "name": "everdown",
+  "version": "0.0.0",
+  "description": "Ever, ever down",
+  "author": "James Ide",
+  "private": true,
+  "main": "src/Everdown.js",
+  "scripts": {
+    "postinstall": "find node_modules -type f -not -regex \".*react-native\\/.*\" -name \".babelrc\" -exec rm -rf {} \\;"
+  },
+  "dependencies": {
+    "@exponent/vector-icons": "~2.0.3",
+    "exponent": "^11.0.3-rc.1",
+    "react": "~15.3.2",
+    "react-native": "git+https://github.com/exponentjs/react-native#sdk-11.0.3",
+    "three": "^0.82.1",
+    "whs": "^1.1.8"
+  }
+}

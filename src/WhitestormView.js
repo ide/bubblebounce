@@ -67,6 +67,17 @@ export default class WhitestormView extends React.Component {
       init: {
         rendering: false,
       },
+      gravity: { // Physic gravity.
+        x: 0,
+        y: -50,
+        z: 0
+      },
+
+      camera: {
+        position: {
+          z: 50,
+        },
+      },
     });
     this._world.renderingPlugin = whsRenderingPlugin;
 

@@ -50,7 +50,6 @@ export default class ExponentRenderingPlugin extends RenderingPlugin {
 
   setSize(width, height) {
     if (this.renderer) {
-      console.log(width, height);
       this.renderer.setSize(width, height);
     }
   }

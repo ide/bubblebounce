@@ -10,7 +10,8 @@ import {
 } from 'react-native';
 
 import Assets from './Assets';
-import WhitestormView from './WhitestormView';
+import TouchResponderMouse from './engine/TouchResponderMouse';
+import WhitestormView from './engine/WhitestormView';
 
 const WHS = require('whs');
 
@@ -22,22 +23,19 @@ export default class GameView extends React.Component {
     world: null,
   };
 
-  constructor(props, context) {
-    super(props, context);
-    this._panResponder = PanResponder.create({
-      onStartShouldSetPanResponder: () => true,
-      onPanResponderGrant: this._handleTouchDown,
-      onPanResponderRelease: this._handleTouchUp,
-      onPanResponderTerminate: this._handleTouchUp,
-      onShouldBlockNativeResponder: () => false,
-    });
-  }
-
   render() {
+    let whitestormProps = {};
+    if (this.state.world) {
+      Object.assign(
+        whitestormProps,
+        this.state.world.mouse.touchHandlers,
+      );
+    }
+
     return (
       <View {...this.props}>
         <WhitestormView
-          {...this._panResponder.panHandlers}
+          {...whitestormProps}
           onWorldCreate={this._handleWorldCreate}
           style={styles.whitestorm}
         />
@@ -58,7 +56,7 @@ export default class GameView extends React.Component {
   _handleWorldCreate = (world) => {
     const sphere = new WHS.Sphere({ // Create sphere comonent.
       geometry: {
-        radius: 3,
+        radius: 8,
         widthSegments: 32,
         heightSegments: 32,
       },
@@ -101,7 +99,7 @@ export default class GameView extends React.Component {
 
     const sphere3 = new WHS.Sphere({ // Create sphere comonent.
       geometry: {
-        radius: 3,
+        radius: 4,
         widthSegments: 32,
         heightSegments: 32,
       },
@@ -115,15 +113,17 @@ export default class GameView extends React.Component {
 
       physics: {
         friction: 0.8,
-        restitution: 2,
+        restitution: 3,
+        damping: 0.1,
       },
 
       position: [4, 23, 0]
-    }).addTo(world);
+    });
+    sphere3.addTo(world);
 
     const sphere4 = new WHS.Sphere({ // Create sphere comonent.
       geometry: {
-        radius: 3,
+        radius: 2,
         widthSegments: 32,
         heightSegments: 32,
       },
@@ -141,7 +141,8 @@ export default class GameView extends React.Component {
       },
 
       position: [-5, 25, 0]
-    }).addTo(world);
+    });
+    sphere4.addTo(world);
 
     new WHS.Box({
       geometry: {
@@ -170,11 +171,18 @@ export default class GameView extends React.Component {
 
     new WHS.PointLight({
       light: {
-        intensity: 1,
+        intensity: 0.8,
         distance: Infinity,
       },
       shadowmap: {
         fov: 90,
+      },
+      position: [0, 200, 200],
+    }).addTo(world);
+
+    new WHS.DirectionalLight({
+      light: {
+        intensity: 0.2,
       },
       position: [0, 200, 200],
     }).addTo(world);
@@ -189,7 +197,25 @@ export default class GameView extends React.Component {
     //   position: [10, 20, 10]
     // }).addTo(world);
 
-    // world.camera.rotation.x = Math.PI / 2;
+    // world.camera.rotation.x = Math.PI / 4;
+    let mouse = new TouchResponderMouse(world);
+    mouse.track(sphere);
+    mouse.track(sphere2);
+    mouse.track(sphere3);
+    mouse.track(sphere4);
+
+    sphere.on('touchstart', () => {
+      console.log('touched sphere');
+    });
+    sphere.on('touchmove', () => {
+      // console.log('moved sphere');
+    });
+    sphere.on('touchend', () => {
+      console.log('end sphere');
+    });
+    sphere.on('touchcancel', () => {
+      console.log('cancel sphere');
+    });
 
     world.start();
     this.setState({ world });

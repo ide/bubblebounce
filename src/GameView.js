@@ -67,7 +67,7 @@ export default class GameView extends React.Component {
 
       material: {
         color: 0xffaaaa,
-        kind: 'phong' // THREE.MeshBasicMaterial
+        kind: 'lambert'
       },
 
       position: [0, 15, 0]
@@ -86,7 +86,7 @@ export default class GameView extends React.Component {
 
       material: {
         color: 0xffffff,
-        kind: 'basic' // THREE.MeshBasicMaterial
+        kind: 'lambert' // THREE.MeshBasicMaterial
       },
 
       physics: {
@@ -99,41 +99,85 @@ export default class GameView extends React.Component {
 
     sphere2.addTo(world);
 
+    const sphere3 = new WHS.Sphere({ // Create sphere comonent.
+      geometry: {
+        radius: 3,
+        widthSegments: 32,
+        heightSegments: 32,
+      },
+
+      mass: 10,
+
+      material: {
+        color: 0x00ff00,
+        kind: 'lambert' // THREE.MeshBasicMaterial
+      },
+
+      physics: {
+        friction: 0.8,
+        restitution: 2,
+      },
+
+      position: [4, 23, 0]
+    }).addTo(world);
+
+    const sphere4 = new WHS.Sphere({ // Create sphere comonent.
+      geometry: {
+        radius: 3,
+        widthSegments: 32,
+        heightSegments: 32,
+      },
+
+      mass: 10,
+
+      material: {
+        color: 0x0000ff,
+        kind: 'lambert' // THREE.MeshBasicMaterial
+      },
+
+      physics: {
+        friction: 0.8,
+        restitution: 2,
+      },
+
+      position: [-5, 25, 0]
+    }).addTo(world);
+
     new WHS.Box({
       geometry: {
         width: 50,
-        height: 50,
-        depth: 2,
+        height: 2,
+        depth: 50,
       },
       mass: 0,
       material: {
         color: 0x447f8b,
-        kind: 'basic',
+        kind: 'lambert',
       },
       rotation: {
-        x: -Math.PI / 2,
-        z: Math.PI / 4,
+        // x: -Math.PI / 2,
+        // z: Math.PI / 4,
       },
-      position: [0, -20, 0],
+      position: [0, -40, 0],
     }).addTo(world);
 
     new WHS.AmbientLight({
       light: {
         color: 0xffffff,
-        intensity: 0.8,
+        intensity: 0.4,
       },
     }).addTo(world);
 
-    // new WHS.PointLight({
-    //   light: {
-    //     intensity: 0.8,
-    //     distance: 100,
-    //   },
-    //   shadowmap: {
-    //     fov: 90,
-    //   },
-    //   position: [0, 10, 10],
-    // }).addTo(world);
+    new WHS.PointLight({
+      light: {
+        intensity: 1,
+        distance: Infinity,
+      },
+      shadowmap: {
+        fov: 90,
+      },
+      position: [0, 200, 200],
+    }).addTo(world);
 
     // new WHS.SpotLight( {
     //   light: {
@@ -144,6 +188,8 @@ export default class GameView extends React.Component {
     //
     //   position: [10, 20, 10]
     // }).addTo(world);
+
+    // world.camera.rotation.x = Math.PI / 2;
 
     world.start();
     this.setState({ world });

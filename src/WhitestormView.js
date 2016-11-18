@@ -88,6 +88,9 @@ export default class WhitestormView extends React.Component {
         position: {
           z: 100,
         },
+        rotation: {
+          x: Math.PI / 4,
+        },
       },
       shadowmap: {
         enabled: true,

@@ -3,7 +3,12 @@ import './FakeBrowser';
 
 import Exponent from 'exponent';
 import React from 'react';
-import { Alert, PanResponder } from 'react-native';
+import {
+  Alert,
+  StyleSheet,
+  View,
+} from 'react-native';
+import Button from 'react-native-button';
 
 import Assets from './Assets';
 import GameView from './GameView';
@@ -11,6 +16,7 @@ import GameView from './GameView';
 export default class Everdown extends React.Component {
   state = {
     loaded: false,
+    gameKey: 0,
   };
 
   componentDidMount() {
@@ -28,17 +34,54 @@ export default class Everdown extends React.Component {
       );
       this.setState({ loaded: true });
     } catch (e) {
-      Alert.alert('Error when loading', e.message);
+      Alert.alert('Error when loading:', e.message);
     }
   }
 
   render() {
-    return this.state.loaded ? (
-      <GameView style={{ flex: 1 }} />
-    ) : (
-      <Exponent.Components.AppLoading />
-    );
+    return this.state.loaded ?
+      this._renderGame() :
+      <Exponent.Components.AppLoading />;
   }
+
+  _renderGame() {
+    return (
+      <View style={styles.container}>
+        <GameView key={`game-${this.state.gameKey}`} style={styles.game} />
+        <View style={styles.controls}>
+          <Button
+            onPress={this._resetGame}
+            style={styles.resetButton}>
+            Reset
+          </Button>
+        </View>
+      </View>
+    )
+  }
+
+  _resetGame = () => {
+    this.setState((state) => ({
+      gameKey: state.gameKey + 1,
+    }));
+  };
 }
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#222',
+    flex: 1,
+  },
+  game: {
+    flex: 1,
+  },
+  controls: {
+    position: 'absolute',
+    right: 6,
+    top: 26,
+  },
+  resetButton: {
+    color: '#fff',
+  },
+})
 
 Exponent.registerRootComponent(Everdown);

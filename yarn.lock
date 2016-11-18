@@ -3243,6 +3243,10 @@ react-deep-force-update@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/react-deep-force-update/-/react-deep-force-update-1.0.1.tgz#f911b5be1d2a6fe387507dd6e9a767aa2924b4c7"
 
+react-native-button@^1.7.1:
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/react-native-button/-/react-native-button-1.7.1.tgz#0c3fb34e7f99dc2c9a8166094be878eb7cb3c36e"
+
 "react-native-maps@git+https://github.com/exponentjs/react-native-maps#12853f0":
   version "0.11.0"
   resolved "git+https://github.com/exponentjs/react-native-maps#12853f0"

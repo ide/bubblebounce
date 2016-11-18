@@ -35,6 +35,17 @@ export default class WhitestormView extends React.Component {
   }
 
   _onContextCreate = (gl) => {
+    gl.createFramebuffer = () => {
+      return null;
+    };
+    gl.createRenderbuffer = () => {
+      return null;
+    };
+    gl.bindRenderbuffer = (target, renderbuffer) => {};
+    gl.renderbufferStorage = (target, internalFormat, width, height) => {};
+    gl.framebufferTexture2D = (target, attachment, textarget, texture, level) => {};
+    gl.framebufferRenderbuffer = (target, attachmebt, renderbuffertarget, renderbuffer) => {};
+
     let threeRendererOptions = {
       canvas: {
         width: gl.drawingBufferWidth,
@@ -45,6 +56,7 @@ export default class WhitestormView extends React.Component {
         clientHeight: gl.drawingBufferHeight,
       },
       context: gl,
+      antialias: true,
     };
 
     let whsRenderingPlugin = new ExponentRenderingPlugin({
@@ -67,16 +79,19 @@ export default class WhitestormView extends React.Component {
       init: {
         rendering: false,
       },
-      gravity: { // Physic gravity.
+      gravity: {
         x: 0,
         y: -50,
         z: 0
       },
-
       camera: {
         position: {
-          z: 50,
+          z: 100,
         },
+      },
+      shadowmap: {
+        enabled: true,
+        type: THREE.PCFSoftShadowMap,
       },
     });
     this._world.renderingPlugin = whsRenderingPlugin;

@@ -65,29 +65,17 @@ export default class WhitestormView extends React.Component {
       init: {
         rendering: false,
       },
-      gravity: {
-        x: 0,
-        y: -50,
-        z: 0
-      },
       camera: {
         position: {
           z: 100,
         },
-        rotation: {
-          x: Math.PI / 4,
-        },
-      },
-      shadowmap: {
-        enabled: true,
-        type: THREE.PCFSoftShadowMap,
       },
     });
     world.renderingPlugin = new ExponentRenderingPlugin({
       gl,
       renderer: threeRendererOptions,
       background: {
-        color: 0x444444,
+        color: 0x000000,
         opacity: 1,
       },
       width: gl.drawingBufferWidth,

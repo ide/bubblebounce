@@ -128,12 +128,7 @@ export default class GameView extends React.Component {
       if (this.state.droppedBubbles[id]) {
         return;
       }
-
-      let velocity = bubble.getLinearVelocity();
-      velocity.x = 0;
-      velocity.z = 0;
-      bubble.setLinearVelocity(velocity);
-
+      bubble.setLinearVelocity(new THREE.Vector3(0, 0, 0));
       let force = new THREE.Vector3((Math.random() - 0.5) * 250, 1100, 0);
       bubble.applyCentralImpulse(force);
     };
@@ -146,6 +141,7 @@ export default class GameView extends React.Component {
   _handleWorldCreate = (world) => {
     // Set up the multitouch mouse before adding components
     let mouse = new MultitouchResponderMouse(world);
+    world.scene.setGravity(new THREE.Vector3(0, -50, 0));
 
     let bubble1 = this.addBubble(world, 1);
     bubble1.material.color.setHex(0xf6432f);
@@ -186,7 +182,7 @@ export default class GameView extends React.Component {
         color: 0x795da3,
         kind: 'lambert',
       },
-      position: [0, -30, 0],
+      position: [0, -20, 0],
     });
     box1.addTo(world);
 
@@ -240,7 +236,10 @@ export default class GameView extends React.Component {
         color: 0x8bbf4b,
         kind: 'lambert',
       },
-      position: [25, -20, -3],
+      position: [25, -10, -3],
+      rotation: {
+        z: Math.PI / 8,
+      },
     });
     box4.addTo(world);
 
@@ -258,7 +257,10 @@ export default class GameView extends React.Component {
         color: 0xcc348b,
         kind: 'lambert',
       },
-      position: [-35, -25, -3],
+      position: [-35, -15, -3],
+      rotation: {
+        z: -Math.PI / 8,
+      },
     });
     box5.addTo(world);
 
@@ -273,6 +275,18 @@ export default class GameView extends React.Component {
     addBoxCollision(box3);
     addBoxCollision(box4);
     addBoxCollision(box5);
+
+    const boxAnimations = new WHS.Loop(() => {
+      let boxes = [box2, box3];
+      boxes.forEach(box => {
+        box.rotation.y += 0.01;
+      });
+
+      box1.rotation.z += 0.01;
+    });
+
+    world.addLoop(boxAnimations);
+    boxAnimations.start();
 
     new WHS.AmbientLight({
       light: {

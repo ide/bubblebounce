@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 
 import Assets from './Assets';
-import MultitouchResponderMouse from './engine/MultitouchResponderMouse';
+// import MultitouchResponderMouse from './engine/MultitouchResponderMouse';
 import WhitestormView from './engine/WhitestormView';
 
 const THREE = require('three');
@@ -32,7 +32,7 @@ export default class GameView extends React.Component {
     if (this.state.world) {
       Object.assign(
         whitestormProps,
-        this.state.world.mouse.touchHandlers,
+        // this.state.world.mouse.touchHandlers,
       );
     }
 
@@ -92,10 +92,10 @@ export default class GameView extends React.Component {
           left: 40,
           right: 40,
         }]}>
-        <Text style={{ fontSize: 32, color: 'white' }}>
+        <Text style={{ fontSize: 32, color: 'white', textAlign: 'justify', marginBottom: 20, }}>
           You dropped the bubbles 😅
         </Text>
-        <Text style={{ fontSize: 32, color: 'white' }}>
+        <Text style={{ fontSize: 32, color: 'white', textAlign: 'justify' }}>
           Play again! (reset in top right)
         </Text>
       </View>
@@ -123,7 +123,7 @@ export default class GameView extends React.Component {
     bubble.native.bubbleId = id;
     bubble.addTo(world);
 
-    world.mouse.track(bubble);
+    // world.mouse.track(bubble);
     let bounce = (event) => {
       if (this.state.droppedBubbles[id]) {
         return;
@@ -145,7 +145,7 @@ export default class GameView extends React.Component {
 
   _handleWorldCreate = (world) => {
     // Set up the multitouch mouse before adding components
-    let mouse = new MultitouchResponderMouse(world);
+    // let mouse = new MultitouchResponderMouse(world);
 
     let bubble1 = this.addBubble(world, 1);
     bubble1.material.color.setHex(0xf6432f);

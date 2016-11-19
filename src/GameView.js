@@ -204,7 +204,7 @@ export default class GameView extends React.Component {
         color: 0x447f8b,
         kind: 'lambert',
       },
-      position: [-25, -45, 3],
+      position: [-25, -40, 3],
     });
     box2.addTo(world);
 
@@ -222,7 +222,7 @@ export default class GameView extends React.Component {
         color: 0xb3865e,
         kind: 'lambert',
       },
-      position: [25, -50, -3],
+      position: [25, -40, -3],
     });
     box3.addTo(world);
 

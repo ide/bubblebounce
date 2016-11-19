@@ -87,7 +87,7 @@ export default class WhitestormView extends React.Component {
       gl,
       renderer: threeRendererOptions,
       background: {
-        color: 0x222222,
+        color: 0x444444,
         opacity: 1,
       },
       width: gl.drawingBufferWidth,

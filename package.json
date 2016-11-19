@@ -1,7 +1,7 @@
 {
-  "name": "everdown",
+  "name": "bubblebounce",
   "version": "0.0.0",
-  "description": "Ever, ever down",
+  "description": "Bounce the bubbles",
   "author": "James Ide",
   "private": true,
   "main": "src/Everdown.js",

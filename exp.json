@@ -1,7 +1,7 @@
 {
-  "name": "Bubble Bubble",
-  "description": "Keep the bubbles afloat!",
-  "slug": "bubblebubble",
+  "name": "Bubble Bounce",
+  "description": "Keep the bubbles afloat while bouncing them off the platforms!",
+  "slug": "bubblebounce",
   "sdkVersion": "11.0.0",
   "version": "1.0.0",
   "orientation": "portrait",

@@ -6,6 +6,7 @@ import {
   Dimensions,
   PanResponder,
   StyleSheet,
+  Text,
   View,
 } from 'react-native';
 
@@ -22,6 +23,8 @@ const WHS = require('whs');
 export default class GameView extends React.Component {
   state = {
     world: null,
+    score: 0,
+    droppedBubbles: {},
   };
 
   render() {
@@ -43,6 +46,7 @@ export default class GameView extends React.Component {
         <View
           pointerEvents="none"
           style={styles.loadingContainer}>
+          {this._renderScore()}
           <ActivityIndicator
             color="#ffffff"
             size="large"
@@ -50,29 +54,88 @@ export default class GameView extends React.Component {
             style={styles.loadingIndicator}
           />
         </View>
+        { this._isGameOver() && this._renderGameOver() }
       </View>
     );
   }
 
-  addBubble(world) {
+  _renderScore() {
+    return (
+      <Text style={{
+        fontSize: 17,
+        color: 'white',
+        fontWeight: '500',
+        backgroundColor: 'transparent',
+        position: 'absolute',
+        top: 26,
+        left: 6,
+      }}>
+        score: {this.state.score}
+      </Text>
+    );
+  }
+
+  _isGameOver() {
+    let { droppedBubbles } = this.state;
+    return droppedBubbles[1] &&
+      droppedBubbles[2] &&
+      droppedBubbles[3] &&
+      droppedBubbles[4];
+  }
+
+  _renderGameOver() {
+    return (
+      <View
+        style={[styles.loadingContainer, {
+          top: 50,
+          backgroundColor: 'transparent',
+          left: 40,
+          right: 40,
+        }]}>
+        <Text style={{ fontSize: 32, color: 'white' }}>
+          You dropped the bubbles 😅
+        </Text>
+        <Text style={{ fontSize: 32, color: 'white' }}>
+          Play again! (reset in top right)
+        </Text>
+      </View>
+    )
+  }
+
+  addBubble(world, id) {
     let bubble = new WHS.Sphere({
       geometry: {
-        radius: 7,
+        radius: 6,
         widthSegments: 32,
         heightSegments: 32,
       },
       mass: 10,
       material: {
-        color: 0xffa500,
+        color: 0xffffff,
         kind: 'lambert',
+      },
+      physics: {
+        restitution: 0.2,
       },
       position: [0, 0, 0],
     });
+    bubble.bubbleId = id;
+    bubble.native.bubbleId = id;
     bubble.addTo(world);
 
     world.mouse.track(bubble);
     let bounce = (event) => {
+      if (this.state.droppedBubbles[id]) {
+        return;
+      }
 
+      let velocity = bubble.getLinearVelocity();
+      velocity.x = 0;
+      velocity.z = 0;
+      bubble.setLinearVelocity(velocity);
+
+      let force = new THREE.Vector3((Math.random() - 0.5) * 250, 1100, 0);
+      bubble.applyCentralImpulse(force);
     };
     bubble.on('touchstart', bounce);
     bubble.on('touchenter', bounce);
@@ -84,48 +147,75 @@ export default class GameView extends React.Component {
     // Set up the multitouch mouse before adding components
     let mouse = new MultitouchResponderMouse(world);
 
-    let bubble1 = this.addBubble(world);
-    bubble1.material.color = 0xffffff;
+    let bubble1 = this.addBubble(world, 1);
+    bubble1.material.color.setHex(0xf6432f);
     bubble1.position.x = -8;
     bubble1.position.y = 29;
 
-    let bubble2 = this.addBubble(world);
+    let bubble2 = this.addBubble(world, 2);
+    bubble2.material.color.setHex(0x29b2ee);
     bubble2.position.x = 8;
     bubble2.position.y = 25;
 
-    new WHS.Box({
+    let bubble3 = this.addBubble(world, 3);
+    bubble3.material.color.setHex(0x333333);
+    bubble3.position.x = 16;
+    bubble3.position.y = 23;
+
+    let bubble4 = this.addBubble(world, 4);
+    bubble4.material.color.setHex(0xfdfc77);
+    bubble4.position.x = -16;
+    bubble4.position.y = 26;
+
+    let bubble5 = this.addBubble(world, 5);
+    bubble4.material.color.setHex(0xffa500);
+    bubble4.position.x = -24;
+    bubble4.position.y = 32;
+
+    let box1 = new WHS.Box({
       geometry: {
         width: 5,
         height: 2,
         depth: 50,
       },
       mass: 0,
+      physics: {
+        restitution: 10,
+      },
       material: {
         color: 0x795da3,
         kind: 'lambert',
       },
-      position: [0, -35, 0],
-    }).addTo(world);
+      position: [0, -30, 0],
+    });
+    box1.addTo(world);
 
-    new WHS.Box({
+    let box2 = new WHS.Box({
       geometry: {
         width: 5,
         height: 2,
         depth: 30,
       },
       mass: 0,
+      physics: {
+        restitution: 10,
+      },
       material: {
         color: 0x447f8b,
         kind: 'lambert',
       },
-      position: [-25, -50, 3],
-    }).addTo(world);
+      position: [-25, -45, 3],
+    });
+    box2.addTo(world);
 
-    new WHS.Box({
+    let box3 = new WHS.Box({
       geometry: {
         width: 5,
         height: 2,
         depth: 30,
+      },
+      physics: {
+        restitution: 10,
       },
       mass: 0,
       material: {
@@ -133,7 +223,56 @@ export default class GameView extends React.Component {
         kind: 'lambert',
       },
       position: [25, -50, -3],
-    }).addTo(world);
+    });
+    box3.addTo(world);
+
+    let box4 = new WHS.Box({
+      geometry: {
+        width: 5,
+        height: 2,
+        depth: 30,
+      },
+      physics: {
+        restitution: 10,
+      },
+      mass: 0,
+      material: {
+        color: 0x8bbf4b,
+        kind: 'lambert',
+      },
+      position: [25, -20, -3],
+    });
+    box4.addTo(world);
+
+    let box5 = new WHS.Box({
+      geometry: {
+        width: 5,
+        height: 2,
+        depth: 30,
+      },
+      physics: {
+        restitution: 10,
+      },
+      mass: 0,
+      material: {
+        color: 0xcc348b,
+        kind: 'lambert',
+      },
+      position: [-35, -25, -3],
+    });
+    box5.addTo(world);
+
+    const addBoxCollision = (box) => {
+      box.native.addEventListener('collision', () => {
+        this.setState({ score: this.state.score + 1});
+      });
+    };
+
+    addBoxCollision(box1);
+    addBoxCollision(box2);
+    addBoxCollision(box3);
+    addBoxCollision(box4);
+    addBoxCollision(box5);
 
     new WHS.AmbientLight({
       light: {
@@ -161,7 +300,20 @@ export default class GameView extends React.Component {
     });
     sunLight.addTo(world);
 
-    //addPlanet(world);
+    addWalls(world);
+    let floor = addFloor(world);
+    floor.native.addEventListener('collision', (other) => {
+      if (other.bubbleId && !this.state.droppedBubbles[other.bubbleId]) {
+        this.setState({
+          droppedBubbles: {
+            ...this.state.droppedBubbles,
+            [other.bubbleId]: true,
+          },
+        });
+      }
+    });
+
+    addPlanet(world);
     addWater(world, sunLight);
 
     world.start();
@@ -186,6 +338,81 @@ const styles = StyleSheet.create({
 
   },
 });
+
+function addFloor(world) {
+  let floor = new WHS.Plane({
+    geometry: {
+      width: 100000,
+      height: 100000,
+    },
+    mass: 0,
+    material: {
+      visible: false,
+    },
+
+    rotation: {
+      x: -Math.PI / 2,
+    },
+
+    position: [0, -70, 0],
+  });
+  floor.addTo(world);
+  return floor;
+}
+
+function addWalls(world) {
+  let left = new WHS.Plane({
+    geometry: {
+      width: 80,
+      height: 150,
+    },
+    mass: 0,
+    material: {
+      visible: false,
+    },
+
+    rotation: {
+      y: Math.PI / 2,
+    },
+
+    position: [-45, 0, -30],
+  });
+  left.addTo(world);
+
+  let right = new WHS.Plane({
+    geometry: {
+      width: 80,
+      height: 150,
+    },
+    mass: 0,
+    material: {
+      visible: false,
+    },
+
+    rotation: {
+      y: -Math.PI / 2,
+    },
+
+    position: [45, 0, -30],
+  });
+  right.addTo(world);
+
+  let ceiling = new WHS.Plane({
+    geometry: {
+      width: 100,
+      height: 110,
+    },
+    mass: 0,
+    material: {
+      visible: false,
+    },
+    rotation: {
+      x: Math.PI / 2,
+    },
+    position: [0, 80, 0],
+  });
+  ceiling.addTo(world);
+}
 
 function addWater(world, sunLight) {
   require('./WaterMaterial');
@@ -269,7 +496,7 @@ function addPlanet(world) {
     },
 
     mass: 0,
-    // physics: false,
+    physics: false,
 
     material: {
       shading: THREE.FlatShading,
@@ -288,7 +515,7 @@ function addPlanet(world) {
     },
 
     mass: 0,
-    // physics: false,
+    physics: false,
 
     material: {
       shading: THREE.FlatShading,
@@ -307,7 +534,7 @@ function addPlanet(world) {
     },
 
     mass: 0,
-    // physics: false,
+    physics: false,
 
     material: {
       shading: THREE.FlatShading,
@@ -324,7 +551,7 @@ function addPlanet(world) {
     },
 
     mass: 0,
-    // physics: false,
+    physics: false,
 
     material: {
       shading: THREE.FlatShading,

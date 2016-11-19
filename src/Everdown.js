@@ -81,6 +81,7 @@ const styles = StyleSheet.create({
   },
   resetButton: {
     color: '#fff',
+    backgroundColor: 'transparent',
   },
 })
 

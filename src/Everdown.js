@@ -68,7 +68,7 @@ export default class Everdown extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#99c1d8',
+    backgroundColor: '#000000',
     flex: 1,
   },
   game: {

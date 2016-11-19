@@ -53,6 +53,12 @@ export default class GameView extends React.Component {
             animating={!this.state.world}
             style={styles.loadingIndicator}
           />
+          <Exponent.Components.Video
+            source={Assets['background-music']}
+            repeat
+            volume={0.7}
+            style={{ width: 0, height: 0, position: 'absolute' }}
+          />
         </View>
         { this._isGameOver() && this._renderGameOver() }
       </View>
@@ -257,7 +263,7 @@ export default class GameView extends React.Component {
         color: 0xcc348b,
         kind: 'lambert',
       },
-      position: [-35, -15, -3],
+      position: [-25, -5, -3],
       rotation: {
         z: -Math.PI / 8,
       },
@@ -277,12 +283,11 @@ export default class GameView extends React.Component {
     addBoxCollision(box5);
 
     const boxAnimations = new WHS.Loop(() => {
-      let boxes = [box2, box3];
-      boxes.forEach(box => {
-        box.rotation.y += 0.01;
-      });
-
       box1.rotation.z += 0.01;
+      box2.rotation.y += 0.01;
+      box3.rotation.y -= 0.01;
+      box4.rotation.y += 0.01;
+      box5.rotation.y -= 0.01;
     });
 
     world.addLoop(boxAnimations);

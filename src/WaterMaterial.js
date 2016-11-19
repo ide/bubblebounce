@@ -172,13 +172,7 @@ THREE.Water = function (renderer, camera, scene, options) {
   this.lookAtPosition = new THREE.Vector3(0, 0, -1);
   this.clipPlane = new THREE.Vector4();
 
-  if ( camera instanceof THREE.PerspectiveCamera ) {
-    this.camera = camera;
-  }
-  else  {
-    this.camera = new THREE.PerspectiveCamera();
-    console.log(this.name + ': camera is not a Perspective Camera!')
-  }
+  this.camera = camera;
 
   this.textureMatrix = new THREE.Matrix4();
 

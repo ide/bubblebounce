@@ -13,6 +13,7 @@ import Assets from './Assets';
 import MultitouchResponderMouse from './engine/MultitouchResponderMouse';
 import WhitestormView from './engine/WhitestormView';
 
+const THREE = require('three');
 const WHS = require('whs');
 
 //// Game
@@ -53,114 +54,85 @@ export default class GameView extends React.Component {
     );
   }
 
+  addBubble(world) {
+    let bubble = new WHS.Sphere({
+      geometry: {
+        radius: 7,
+        widthSegments: 32,
+        heightSegments: 32,
+      },
+      mass: 10,
+      material: {
+        color: 0xffa500,
+        kind: 'lambert',
+      },
+      position: [0, 0, 0],
+    });
+    bubble.addTo(world);
+
+    world.mouse.track(bubble);
+    let bounce = (event) => {
+
+    };
+    bubble.on('touchstart', bounce);
+    bubble.on('touchenter', bounce);
+
+    return bubble;
+  }
+
   _handleWorldCreate = (world) => {
-    let sphere = new WHS.Sphere({ // Create sphere comonent.
-      geometry: {
-        radius: 8,
-        widthSegments: 32,
-        heightSegments: 32,
-      },
+    // Set up the multitouch mouse before adding components
+    let mouse = new MultitouchResponderMouse(world);
 
-      mass: 10,
-      physics: false,
+    let bubble1 = this.addBubble(world);
+    bubble1.material.color = 0xffffff;
+    bubble1.position.x = -8;
+    bubble1.position.y = 29;
 
-      material: {
-        color: 0xffaaaa,
-        kind: 'lambert'
-      },
-
-      position: [0, 15, 0]
-    });
-
-    sphere.addTo(world);
-
-    const sphere2 = new WHS.Sphere({ // Create sphere comonent.
-      geometry: {
-        radius: 3,
-        widthSegments: 32,
-        heightSegments: 32,
-      },
-
-      mass: 10,
-
-      material: {
-        color: 0xffffff,
-        kind: 'lambert' // THREE.MeshBasicMaterial
-      },
-
-      physics: {
-        friction: 0.8,
-        restitution: 2,
-      },
-
-      position: [1, 25, 0]
-    });
-
-    sphere2.addTo(world);
-
-    const sphere3 = new WHS.Sphere({ // Create sphere comonent.
-      geometry: {
-        radius: 6,
-        widthSegments: 32,
-        heightSegments: 32,
-      },
-
-      mass: 10,
-
-      material: {
-        color: 0x00ff00,
-        kind: 'lambert' // THREE.MeshBasicMaterial
-      },
-
-      physics: {
-        friction: 0.8,
-        restitution: 3,
-        damping: 0.1,
-      },
-
-      position: [4, 23, 0]
-    });
-    sphere3.addTo(world);
-
-    const sphere4 = new WHS.Sphere({ // Create sphere comonent.
-      geometry: {
-        radius: 2,
-        widthSegments: 32,
-        heightSegments: 32,
-      },
-
-      mass: 10,
-
-      material: {
-        color: 0x0000ff,
-        kind: 'lambert' // THREE.MeshBasicMaterial
-      },
-
-      physics: {
-        friction: 0.8,
-        restitution: 2,
-      },
-
-      position: [-5, 25, 0]
-    });
-    sphere4.addTo(world);
+    let bubble2 = this.addBubble(world);
+    bubble2.position.x = 8;
+    bubble2.position.y = 25;
 
     new WHS.Box({
       geometry: {
-        width: 50,
+        width: 5,
         height: 2,
         depth: 50,
+      },
+      mass: 0,
+      material: {
+        color: 0x795da3,
+        kind: 'lambert',
+      },
+      position: [0, -35, 0],
+    }).addTo(world);
+
+    new WHS.Box({
+      geometry: {
+        width: 5,
+        height: 2,
+        depth: 30,
       },
       mass: 0,
       material: {
         color: 0x447f8b,
         kind: 'lambert',
       },
-      rotation: {
-        // x: -Math.PI / 2,
-        // z: Math.PI / 4,
+      position: [-25, -50, 3],
+    }).addTo(world);
+
+    new WHS.Box({
+      geometry: {
+        width: 5,
+        height: 2,
+        depth: 30,
       },
-      position: [0, -40, 0],
+      mass: 0,
+      material: {
+        color: 0xb3865e,
+        kind: 'lambert',
+      },
+      position: [25, -50, -3],
     }).addTo(world);
 
     new WHS.AmbientLight({
@@ -181,81 +153,19 @@ export default class GameView extends React.Component {
       position: [0, 200, 200],
     }).addTo(world);
 
-    new WHS.DirectionalLight({
+    let sunLight = new WHS.DirectionalLight({
       light: {
         intensity: 0.2,
       },
       position: [0, 200, 200],
-    }).addTo(world);
-
-    // new WHS.SpotLight( {
-    //   light: {
-    //     color: 0xccffcc,
-    //     intensity: 3,
-    //     distance: 1000
-    //   },
-    //
-    //   position: [10, 20, 10]
-    // }).addTo(world);
-
-    // world.camera.rotation.x = Math.PI / 4;
-    let mouse = new MultitouchResponderMouse(world);
-    mouse.track(sphere);
-    mouse.track(sphere2);
-    mouse.track(sphere3);
-    mouse.track(sphere4);
-
-
-    sphere.on('touchstart', () => {
-      console.log('touched sphere');
     });
-    sphere.on('touchmove', () => {
-      console.log('moved sphere');
-    });
-    sphere.on('touchend', () => {
-      console.log('end sphere');
-    });
-    sphere.on('touchcancel', () => {
-      console.log('cancel sphere');
-    });
-    sphere.on('touchenter', () => {
-      console.log('enter sphere');
-    });
-    sphere.on('touchleave', () => {
-      console.log('leave sphere');
-    });
-
-    sphere3.on('touchstart', () => {
-      console.log('touched sphere3');
-    });
-    sphere3.on('touchmove', () => {
-      console.log('moved sphere3');
-    });
-    sphere3.on('touchend', () => {
-      console.log('end sphere3');
-    });
-    sphere3.on('touchcancel', () => {
-      console.log('cancel sphere3');
-    });
-    sphere3.on('touchenter', () => {
-      console.log('enter sphere3');
-    });
-    sphere3.on('touchleave', () => {
-      console.log('leave sphere3');
-    });
+    sunLight.addTo(world);
 
     //addPlanet(world);
+    addWater(world, sunLight);
 
     world.start();
     this.setState({ world });
-  };
-
-  _handleTouchDown = (event) => {
-    console.log('touch down');
-  };
-
-  _handleTouchUp = (event) => {
-    console.log('touch up');
   };
 }
 
@@ -277,12 +187,47 @@ const styles = StyleSheet.create({
   },
 });
 
+function addWater(world, sunLight) {
+  require('./WaterMaterial');
+  let waterNormals = WhitestormView.textureFromAsset(Assets['water-normals']);
+  waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
+
+  let water = new THREE.Water(world.renderer, world.camera, world.scene, {
+			textureWidth: 256,
+			textureHeight: 256,
+			waterNormals: waterNormals,
+			alpha: 0.5,
+			sunDirection: sunLight.position.normalize(),
+			sunColor: 0xffffff,
+			waterColor: 0x3aaefb,
+			betaVersion: 0,
+			side: THREE.DoubleSide
+		});
+	var meshMirror = new THREE.Mesh(
+		new THREE.PlaneBufferGeometry(2000, 2000, 10, 10),
+		water.material
+	);
+	meshMirror.add(water);
+	meshMirror.rotation.x = -Math.PI / 2;
+  // meshMirror.rotation.z = -Math.PI / 4;
+  meshMirror.position.y = -40;
+	world.scene.add(meshMirror);
+
+
+  let waterAnim = new WHS.Loop(() => {
+    water.material.uniforms.time.value += 1 / 60;
+  });
+
+  world.addLoop(waterAnim);
+  waterAnim.start();
+}
+
 function addPlanet(world) {
-  const radiusMin = 20, // Min radius of the asteroid belt.
-  radiusMax = 32, // Max radius of the asteroid belt.
-  particleCount = 200, // Amount of asteroids.
-  particleMinRadius = 0.02, // Min of asteroid radius.
-  particleMaxRadius = 0.7, // Max of asteroid radius.
+  const radiusMin = 25, // Min radius of the asteroid belt.
+  radiusMax = 80, // Max radius of the asteroid belt.
+  particleCount = 20, // Amount of asteroids.
+  particleMinRadius = 0.5, // Min of asteroid radius.
+  particleMaxRadius = 1.5, // Max of asteroid radius.
   planetSize = 8; // Radius of planet.
 
   const colors = {
@@ -295,6 +240,8 @@ function addPlanet(world) {
   const space = new WHS.Group();
   space.addTo(world);
   space.rotation.z = Math.PI / 12;
+  space.position.y = 80;
+  space.position.z = -40;
 
   const planet = new WHS.Tetrahedron({
     geometry: {
@@ -322,7 +269,7 @@ function addPlanet(world) {
     },
 
     mass: 0,
-    physics: false,
+    // physics: false,
 
     material: {
       shading: THREE.FlatShading,
@@ -341,7 +288,7 @@ function addPlanet(world) {
     },
 
     mass: 0,
-    physics: false,
+    // physics: false,
 
     material: {
       shading: THREE.FlatShading,
@@ -360,7 +307,7 @@ function addPlanet(world) {
     },
 
     mass: 0,
-    physics: false,
+    // physics: false,
 
     material: {
       shading: THREE.FlatShading,
@@ -377,7 +324,7 @@ function addPlanet(world) {
     },
 
     mass: 0,
-    physics: false,
+    // physics: false,
 
     material: {
       shading: THREE.FlatShading,

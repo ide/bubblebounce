@@ -1,7 +1,7 @@
 {
-  "name": "Everdown",
-  "description": "An empty new project",
-  "slug": "everdown",
+  "name": "Bubble Bubble",
+  "description": "Keep the bubbles afloat!",
+  "slug": "bubblebubble",
   "sdkVersion": "11.0.0",
   "version": "1.0.0",
   "orientation": "portrait",

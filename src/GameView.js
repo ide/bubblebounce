@@ -86,7 +86,8 @@ export default class GameView extends React.Component {
     return droppedBubbles[1] &&
       droppedBubbles[2] &&
       droppedBubbles[3] &&
-      droppedBubbles[4];
+      droppedBubbles[4]
+      droppedBubbles[5];
   }
 
   _renderGameOver() {

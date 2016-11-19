@@ -157,22 +157,22 @@ export default class GameView extends React.Component {
     let bubble2 = this.addBubble(world, 2);
     bubble2.material.color.setHex(0x29b2ee);
     bubble2.position.x = 8;
-    bubble2.position.y = 25;
+    bubble2.position.y = 28;
 
     let bubble3 = this.addBubble(world, 3);
     bubble3.material.color.setHex(0x333333);
-    bubble3.position.x = 16;
-    bubble3.position.y = 23;
+    bubble3.position.x = 18;
+    bubble3.position.y = 26;
 
     let bubble4 = this.addBubble(world, 4);
-    bubble4.material.color.setHex(0xfdfc77);
-    bubble4.position.x = -16;
+    bubble4.material.color.setHex(0xffa500);
+    bubble4.position.x = -18;
     bubble4.position.y = 26;
 
     let bubble5 = this.addBubble(world, 5);
-    bubble4.material.color.setHex(0xffa500);
-    bubble4.position.x = -24;
-    bubble4.position.y = 32;
+    bubble5.material.color.setHex(0xffffff);
+    bubble5.position.x = -28;
+    bubble5.position.y = 32;
 
     let box1 = new WHS.Box({
       geometry: {
@@ -431,6 +431,35 @@ function addWalls(world) {
     position: [0, 80, 0],
   });
   ceiling.addTo(world);
+
+  let front = new WHS.Plane({
+    geometry: {
+      width: 80,
+      height: 150,
+    },
+    mass: 0,
+    material: {
+      visible: false,
+    },
+    rotation: {
+      y: Math.PI,
+    },
+    position: [0, 0, 12],
+  });
+  front.addTo(world);
+
+  let back = new WHS.Plane({
+    geometry: {
+      width: 80,
+      height: 150,
+    },
+    mass: 0,
+    material: {
+      visible: false,
+    },
+    position: [0, 0, -12],
+  });
+  back.addTo(world);
 }
 
 function addWater(world, sunLight) {

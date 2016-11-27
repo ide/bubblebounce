@@ -17,6 +17,6 @@
     "react-native": "git+https://github.com/exponentjs/react-native#sdk-11.0.3",
     "react-native-button": "^1.7.1",
     "three": "^0.82.1",
-    "whs": "^1.1.14"
+    "whs": "^1.2.0"
   }
 }

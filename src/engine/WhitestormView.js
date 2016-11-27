@@ -62,39 +62,55 @@ export default class WhitestormView extends React.Component {
 
     let world = new WHS.World({
       stats: false,
-      init: {
+
+      plugins: {
         rendering: false,
       },
+
+      physics: {
+        fixedTimeStep: 1 / 30,
+        broadphase: {type: 'sweepprune'}
+      },
+
       camera: {
         position: {
-          z: 100,
+          z: 100
         },
       },
     });
-    world.renderingPlugin = new ExponentRenderingPlugin({
+
+    world.$rendering = new ExponentRenderingPlugin({
       gl,
-      renderer: threeRendererOptions,
-      background: {
-        color: 0x000000,
-        opacity: 1,
+
+      rendering: {
+        renderer: threeRendererOptions,
+
+        background: {
+          color: 0x000000,
+          opacity: 1,
+        },
+
+        shadowmap: {
+          enabled: false, // Enable when EXGL supports renderbuffers and framebuffers
+          type: THREE.PCFShadowMap,
+        }
       },
+
       width: gl.drawingBufferWidth,
       height: gl.drawingBufferHeight,
-      shadowmap: {
-        enabled: false, // Enable when EXGL supports renderbuffers and framebuffers
-        type: THREE.PCFSoftShadowMap,
-      },
     });
 
-    this._world = world;
-    this.props.onWorldCreate(this._world);
+    this.world = world;
+    this.props.onWorldCreate(this.world);
   };
 
   componentWillUnmount() {
-    if (this._world) {
+    if (this.world) {
       // ExponentRenderingPlugin specially defines stop()
-      this._world.renderingPlugin.stop();
-      this._world = null;
+      this.world.$rendering.stop();
+      this.world.render = false;
+      this.world.simulate = false;
+      this.world = null;
     }
   }
 

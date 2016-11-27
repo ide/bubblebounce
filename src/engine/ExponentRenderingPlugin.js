@@ -21,41 +21,40 @@ export default class ExponentRenderingPlugin extends RenderingPlugin {
   constructor(params: Params) {
     super(params);
     return (world) => {
-      this.parentWorld = world;
+      this.world = world;
       return this;
     }
   }
 
   build(params) {
-    // Renderer.
-    this.renderer = new THREE.WebGLRenderer(this.params.renderer);
+    const renderParams = params.rendering;
 
-    const _renderer = this.renderer;
-    _renderer.setClearColor(
-      this.params.background.color,
-      this.params.background.opacity,
+    // Renderer.
+    this.$renderer = new THREE.WebGLRenderer(renderParams.renderer);
+
+    const renderer = this.$renderer;
+    renderer.setClearColor(
+      renderParams.background.color,
+      renderParams.background.opacity,
     );
 
     // Shadowmap.
-    _renderer.shadowMap.enabled = this.params.shadowmap.enabled;
-    _renderer.shadowMap.type = this.params.shadowmap.type;
-    _renderer.shadowMap.cascade = true;
+    renderer.shadowMap.enabled = renderParams.shadowmap.enabled;
+    renderer.shadowMap.type = renderParams.shadowmap.type;
+    renderer.shadowMap.cascade = true;
 
     this.setSize(this.params.width, this.params.height);
   }
 
-  renderPlugin(delta) {
-    const _scene = this.parentWorld.scene;
-    const _cameraNative = this.parentWorld.camera.native;
-
-    this.renderer.render(_scene, _cameraNative);
+  renderPlugin(scene, camera, delta) {
+    this.$renderer.render(scene, camera);
     this.params.gl.flush();
     this.params.gl.endFrameEXP();
   }
 
   setSize(width, height) {
-    if (this.renderer) {
-      this.renderer.setSize(width, height);
+    if (this.$renderer) {
+      this.$renderer.setSize(width, height);
     }
   }
 
@@ -63,36 +62,65 @@ export default class ExponentRenderingPlugin extends RenderingPlugin {
     this.clock = new THREE.Clock();
     this.onStartRendering = onStartRendering;
     this.onFinishRendering = onFinishRendering;
-    this.render();
+    this.render(this.world.$scene, this.world.$camera.native);
   }
 
   stop() {
-    if (this._requestAnimationFrameID) {
-      cancelAnimationFrame(this._requestAnimationFrameID);
+    if (this.frameHandler) {
+      cancelAnimationFrame(this.frameHandler);
     }
   }
 
-  render = () => {
-    const delta = this.clock.getDelta();
+  // render = () => {
+  //   const delta = this.clock.getDelta();
 
-    if (this.stats) {
-      this.stats.begin();
+  //   if (this.stats) {
+  //     this.stats.begin();
+  //   }
+
+  //   if (this.onStartRendering){
+  //     this.onStartRendering(delta);
+  //   }
+
+  //   this.renderPlugin(delta);
+
+  //   if (this.onFinishRendering) {
+  //     this.onFinishRendering(delta);
+  //   }
+
+  //   if (this.stats) {
+  //     this.stats.end();
+  //   }
+
+  //   requestAnimationFrame(this.render);
+  // };
+
+  render(cachedScene, cachedCamera) {
+    const scene = cachedScene;
+    const camera = cachedCamera;
+    const clock = this.clock;
+    const stats = this.$stats;
+
+    const onStartRendering = this.onStartRendering;
+    const onFinishRendering = this.onFinishRendering;
+
+    function render() {
+      requestAnimationFrame(render.bind(this));
+
+      const delta = clock.getDelta();
+
+      // Init stats.
+      if (stats) stats.begin();
+      if (onStartRendering) onStartRendering(delta);
+
+      this.renderPlugin(scene, camera, delta);
+
+      if (onFinishRendering) onFinishRendering(delta);
+
+      // End helper.
+      if (stats) stats.end();
     }
 
-    if (this.onStartRendering){
-      this.onStartRendering(delta);
-    }
-
-    this.renderPlugin(delta);
-
-    if (this.onFinishRendering) {
-      this.onFinishRendering(delta);
-    }
-
-    if (this.stats) {
-      this.stats.end();
-    }
-
-    requestAnimationFrame(this.render);
-  };
+    this.frameHandler = requestAnimationFrame(render.bind(this));
+  }
 }

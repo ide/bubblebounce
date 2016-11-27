@@ -27,6 +27,21 @@ export default class GameView extends React.Component {
     droppedBubbles: {},
   };
 
+  bubbleComponent = new WHS.Sphere({
+    geometry: [6, 16, 16],
+
+    mass: 10,
+
+    material: {
+      color: 0xffffff,
+      kind: 'lambert',
+    },
+
+    physics: {
+      restitution: 0.2,
+    }
+  });
+
   render() {
     let whitestormProps = {};
     if (this.state.world) {
@@ -109,36 +124,24 @@ export default class GameView extends React.Component {
     )
   }
 
-  addBubble(world, id) {
-    let bubble = new WHS.Sphere({
-      geometry: {
-        radius: 6,
-        widthSegments: 32,
-        heightSegments: 32,
-      },
-      mass: 10,
-      material: {
-        color: 0xffffff,
-        kind: 'lambert',
-      },
-      physics: {
-        restitution: 0.2,
-      },
-      position: [0, 0, 0],
-    });
+  addBubble(id, color) {
+    let bubble = this.bubbleComponent.clone();
+    bubble.material = new THREE.MeshLambertMaterial({color})
     bubble.bubbleId = id;
     bubble.native.bubbleId = id;
-    bubble.addTo(world);
+    bubble.addTo(this.world);
 
-    world.mouse.track(bubble);
+    this.world.mouse.track(bubble);
+
     let bounce = (event) => {
       if (this.state.droppedBubbles[id]) {
         return;
       }
       bubble.setLinearVelocity(new THREE.Vector3(0, 0, 0));
-      let force = new THREE.Vector3((Math.random() - 0.5) * 250, 1100, 0);
+      let force = new THREE.Vector3((Math.random() - 0.5) * 250, 500, 0);
       bubble.applyCentralImpulse(force);
     };
+
     bubble.on('touchstart', bounce);
     bubble.on('touchenter', bounce);
 
@@ -146,130 +149,31 @@ export default class GameView extends React.Component {
   }
 
   _handleWorldCreate = (world) => {
+    this.world = world;
+
     // Set up the multitouch mouse before adding components
     let mouse = new MultitouchResponderMouse(world);
-    world.scene.setGravity(new THREE.Vector3(0, -50, 0));
+    world.$scene.setGravity(new THREE.Vector3(0, -50, 0));
 
-    let bubble1 = this.addBubble(world, 1);
-    bubble1.material.color.setHex(0xf6432f);
+    let bubble1 = this.addBubble(1, 0xf6432f);
     bubble1.position.x = -8;
     bubble1.position.y = 29;
 
-    let bubble2 = this.addBubble(world, 2);
-    bubble2.material.color.setHex(0x29b2ee);
+    let bubble2 = this.addBubble(2, 0x29b2ee);
     bubble2.position.x = 8;
     bubble2.position.y = 28;
 
-    let bubble3 = this.addBubble(world, 3);
-    bubble3.material.color.setHex(0x333333);
+    let bubble3 = this.addBubble(3, 0x333333);
     bubble3.position.x = 18;
     bubble3.position.y = 26;
 
-    let bubble4 = this.addBubble(world, 4);
-    bubble4.material.color.setHex(0xffa500);
+    let bubble4 = this.addBubble(4, 0xffa500);
     bubble4.position.x = -18;
     bubble4.position.y = 26;
 
-    let bubble5 = this.addBubble(world, 5);
-    bubble5.material.color.setHex(0xffffff);
+    let bubble5 = this.addBubble(5, 0xffffff);
     bubble5.position.x = -28;
     bubble5.position.y = 32;
-
-    let box1 = new WHS.Box({
-      geometry: {
-        width: 5,
-        height: 2,
-        depth: 50,
-      },
-      mass: 0,
-      physics: {
-        restitution: 10,
-      },
-      material: {
-        color: 0x795da3,
-        kind: 'lambert',
-      },
-      position: [0, -20, 0],
-    });
-    box1.addTo(world);
-
-    let box2 = new WHS.Box({
-      geometry: {
-        width: 5,
-        height: 2,
-        depth: 30,
-      },
-      mass: 0,
-      physics: {
-        restitution: 10,
-      },
-      material: {
-        color: 0x447f8b,
-        kind: 'lambert',
-      },
-      position: [-25, -40, 3],
-    });
-    box2.addTo(world);
-
-    let box3 = new WHS.Box({
-      geometry: {
-        width: 5,
-        height: 2,
-        depth: 30,
-      },
-      physics: {
-        restitution: 10,
-      },
-      mass: 0,
-      material: {
-        color: 0xb3865e,
-        kind: 'lambert',
-      },
-      position: [25, -40, -3],
-    });
-    box3.addTo(world);
-
-    let box4 = new WHS.Box({
-      geometry: {
-        width: 5,
-        height: 2,
-        depth: 30,
-      },
-      physics: {
-        restitution: 10,
-      },
-      mass: 0,
-      material: {
-        color: 0x8bbf4b,
-        kind: 'lambert',
-      },
-      position: [25, -10, -3],
-      rotation: {
-        z: Math.PI / 8,
-      },
-    });
-    box4.addTo(world);
-
-    let box5 = new WHS.Box({
-      geometry: {
-        width: 5,
-        height: 2,
-        depth: 30,
-      },
-      physics: {
-        restitution: 10,
-      },
-      mass: 0,
-      material: {
-        color: 0xcc348b,
-        kind: 'lambert',
-      },
-      position: [-25, -5, -3],
-      rotation: {
-        z: -Math.PI / 8,
-      },
-    });
-    box5.addTo(world);
 
     const addBoxCollision = (box) => {
       box.native.addEventListener('collision', () => {
@@ -277,22 +181,67 @@ export default class GameView extends React.Component {
       });
     };
 
-    addBoxCollision(box1);
-    addBoxCollision(box2);
-    addBoxCollision(box3);
-    addBoxCollision(box4);
-    addBoxCollision(box5);
+    let box1 = new WHS.Box({
+      geometry: [5, 2, 50],
 
-    const boxAnimations = new WHS.Loop(() => {
+      mass: 0,
+
+      physics: {
+        restitution: 1,
+      },
+
+      material: {
+        color: 0x795da3,
+        kind: 'lambert',
+      },
+
+      position: [0, -20, 0],
+    });
+    box1.addTo(world).then(addBoxCollision);
+
+    let box2 = new WHS.Box({
+      geometry: [5, 2, 30],
+
+      mass: 0,
+
+      physics: {
+        restitution: 1,
+      },
+
+      material: {
+        color: 0x447f8b,
+        kind: 'lambert',
+      },
+
+      position: [-25, -40, 3],
+    });
+
+    box2.addTo(world).then(addBoxCollision);
+
+    let box3 = box2.clone();
+    box3.material = new THREE.MeshLambertMaterial({color: 0xb3865e});
+    box3.position.set(25, -40, -3);
+    box3.addTo(world).then(addBoxCollision);
+
+    let box4 = box2.clone();
+    box4.material = new THREE.MeshLambertMaterial({color: 0x8bbf4b});
+    box4.position.set(25, -10, -3);
+    box4.rotation.z = Math.PI / 8;
+    box4.addTo(world).then(addBoxCollision);
+
+    let box5 = box2.clone();
+    box5.material = new THREE.MeshLambertMaterial({color: 0xb3865e});
+    box5.position.set(-25, -5, -3);
+    box4.rotation.z = - Math.PI / 8;
+    box5.addTo(world).then(addBoxCollision);
+
+    new WHS.Loop(() => {
       box1.rotation.z += 0.01;
       box2.rotation.y += 0.01;
       box3.rotation.y -= 0.01;
       box4.rotation.y += 0.01;
       box5.rotation.y -= 0.01;
-    });
-
-    world.addLoop(boxAnimations);
-    boxAnimations.start();
+    }).start(world);
 
     new WHS.AmbientLight({
       light: {
@@ -359,16 +308,18 @@ const styles = StyleSheet.create({
   },
 });
 
+const transparentMaterial = new THREE.MeshBasicMaterial({transparent: true, opacity: 0});
+
 function addFloor(world) {
   let floor = new WHS.Plane({
     geometry: {
-      width: 100000,
-      height: 100000,
+      width: 100,
+      height: 100,
     },
+
     mass: 0,
-    material: {
-      visible: false,
-    },
+
+    material: transparentMaterial,
 
     rotation: {
       x: -Math.PI / 2,
@@ -386,10 +337,10 @@ function addWalls(world) {
       width: 80,
       height: 150,
     },
+
     mass: 0,
-    material: {
-      visible: false,
-    },
+
+    material: transparentMaterial,
 
     rotation: {
       y: Math.PI / 2,
@@ -399,22 +350,9 @@ function addWalls(world) {
   });
   left.addTo(world);
 
-  let right = new WHS.Plane({
-    geometry: {
-      width: 80,
-      height: 150,
-    },
-    mass: 0,
-    material: {
-      visible: false,
-    },
-
-    rotation: {
-      y: -Math.PI / 2,
-    },
-
-    position: [45, 0, -30],
-  });
+  let right = left.clone();
+  right.position.x = 45;
+  right.rotation.y = - Math.PI / 2;
   right.addTo(world);
 
   let ceiling = new WHS.Plane({
@@ -422,72 +360,60 @@ function addWalls(world) {
       width: 100,
       height: 110,
     },
+
     mass: 0,
-    material: {
-      visible: false,
-    },
+
+    material: transparentMaterial,
+
     rotation: {
       x: Math.PI / 2,
     },
+
     position: [0, 80, 0],
   });
   ceiling.addTo(world);
 
-  let front = new WHS.Plane({
-    geometry: {
-      width: 80,
-      height: 150,
-    },
-    mass: 0,
-    material: {
-      visible: false,
-    },
-    rotation: {
-      y: Math.PI,
-    },
-    position: [0, 0, 12],
-  });
+  let front = left.clone();
+  front.position.set(0, 0, 12);
+  front.rotation.y = Math.PI;
   front.addTo(world);
 
-  let back = new WHS.Plane({
-    geometry: {
-      width: 80,
-      height: 150,
-    },
-    mass: 0,
-    material: {
-      visible: false,
-    },
-    position: [0, 0, -12],
-  });
+  let back = front.clone();
+  back.position.z = -12;
+  back.rotation.set(0, 0, 0);
   back.addTo(world);
 }
 
+// Water
+
 function addWater(world, sunLight) {
   require('./WaterMaterial');
+
   let waterNormals = WhitestormView.textureFromAsset(Assets['water-normals']);
   waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
 
-  let water = new THREE.Water(world.renderer, world.camera, world.scene, {
-			textureWidth: 256,
-			textureHeight: 256,
-			waterNormals: waterNormals,
-			alpha: 0.5,
-			sunDirection: sunLight.position.normalize(),
-			sunColor: 0xffffff,
-			waterColor: 0x3aaefb,
-			betaVersion: 0,
-			side: THREE.DoubleSide
-		});
+  let water = new THREE.Water(world.$renderer, world.$camera, world.$scene, {
+		textureWidth: 256,
+		textureHeight: 256,
+		waterNormals: waterNormals,
+		alpha: 0.5,
+		sunDirection: sunLight.position.normalize(),
+		sunColor: 0xffffff,
+		waterColor: 0x3aaefb,
+		betaVersion: 0,
+		side: THREE.DoubleSide
+	});
+
 	var meshMirror = new THREE.Mesh(
 		new THREE.PlaneBufferGeometry(2000, 2000, 10, 10),
 		water.material
 	);
+
 	meshMirror.add(water);
 	meshMirror.rotation.x = -Math.PI / 2;
   // meshMirror.rotation.z = -Math.PI / 4;
   meshMirror.position.y = -40;
-	world.scene.add(meshMirror);
+	world.$scene.add(meshMirror);
 
 
   let waterAnim = new WHS.Loop(() => {
@@ -497,6 +423,8 @@ function addWater(world, sunLight) {
   world.addLoop(waterAnim);
   waterAnim.start();
 }
+
+// Planets
 
 function addPlanet(world) {
   const radiusMin = 25, // Min radius of the asteroid belt.

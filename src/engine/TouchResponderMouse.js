@@ -41,8 +41,8 @@ export default class TouchResponderMouse extends Events {
     let { locationX, locationY } = event.nativeEvent;
     this.mouse.x = (locationX / this.world.params.width) * 2 - 1;
     this.mouse.y = -(locationY / this.world.params.height) * 2 + 1;
-    this.projectionPlane.normal.copy(this.world.camera.native.getWorldDirection());
-    this.raycaster.setFromCamera(this.mouse, this.world.camera.native);
+    this.projectionPlane.normal.copy(this.world.$camera.native.getWorldDirection());
+    this.raycaster.setFromCamera(this.mouse, this.world.$camera.native);
   }
 
   track(component) {
